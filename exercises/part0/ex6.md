@@ -1,4 +1,3 @@
-::: mermaid
 sequenceDiagram
     participant browser
     participant server
@@ -9,4 +8,3 @@ sequenceDiagram
     activate server
     server-->>browser: Note created
     deactivate server
-:::
