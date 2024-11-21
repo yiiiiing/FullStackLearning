@@ -4,13 +4,22 @@ const Header = (props) => {
   )
 }
 
+
+const Part = (props) => {
+  return (
+    <p>{props.part} {props.exercise}</p>
+  )
+}
+
+
 const Content = (props)  => {
   return (
     <div>
-      {props.content.map(ele => <p>{ele.part} {ele.exercise}</p>)} 
+      {props.content.map(ele => <Part part={ele.part} exercise={ele.exercise}/>)} 
     </div>
   )
 }
+
 
 const Total = (props) => {
   var num = 0
