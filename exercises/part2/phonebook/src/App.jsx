@@ -20,15 +20,18 @@ const App = () => {
 
     const existPerson = persons.find(p => p.name === newName)
     if (existPerson) {
-      // update number
-      const updatePerson = {...existPerson, number:newNumber}
-      const id = existPerson.id
-      phonebookservice
-      .update(updatePerson.id, updatePerson)
-      .then((newPerson) => {
-        console.log(`Update person's number with ${id}`)
-        setPersons(persons.map(p => p.id === id ? newPerson : p))
-      })
+      const confirmRes = confirm(`${existPerson.name} is already added to the phonebook, replace the old number with a new one?`)
+      if (confirmRes){
+         // update number
+        const updatePerson = {...existPerson, number:newNumber}
+        const id = existPerson.id
+        phonebookservice
+        .update(updatePerson.id, updatePerson)
+        .then((newPerson) => {
+          console.log(`Update person's number with ${id}`)
+          setPersons(persons.map(p => p.id === id ? newPerson : p))
+        })
+      }     
     }else{
       phonebookservice
       .create({name: newName, number:newNumber})
@@ -56,7 +59,7 @@ const App = () => {
   const removePerson = (id) => {
     phonebookservice.remove(id).then(
       (response) => {
-        console.log(`Deleted post with ID ${id}`)
+        console.log(`Deleted person with ID ${id}`)
         setPersons(persons.filter(p => p.id !== id))
       }
     )
