@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import Phonebook from './components/Phonebook'
 import PersonForm from './components/PersonForm'
+import phonebookservice from './services/phonebook'
 
 
 const App = () => {
@@ -14,14 +14,27 @@ const App = () => {
   const addPerson = (event) =>{
     event.preventDefault()
     if (newName === '' || newNumber === ''){
+      alert("name and number cannot be empty")
       return
     }
 
-    if (persons.some(p => p.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    const existPerson = persons.find(p => p.name === newName)
+    if (existPerson) {
+      // update number
+      const updatePerson = {...existPerson, number:newNumber}
+      const id = existPerson.id
+      phonebookservice
+      .update(updatePerson.id, updatePerson)
+      .then((newPerson) => {
+        console.log(`Update person's number with ${id}`)
+        setPersons(persons.map(p => p.id === id ? newPerson : p))
+      })
     }else{
-      const personObj = persons.concat({name: newName, number:newNumber, id:persons.length+1})
-      setPersons(personObj)
+      phonebookservice
+      .create({name: newName, number:newNumber})
+      .then( createdPerson => {
+        setPersons(persons.concat(createdPerson))
+      })
     }
     setNewName('')
     setNewNumber('')
@@ -40,14 +53,20 @@ const App = () => {
     setFilter(newFilter)
   }
 
+  const removePerson = (id) => {
+    phonebookservice.remove(id).then(
+      (response) => {
+        console.log(`Deleted post with ID ${id}`)
+        setPersons(persons.filter(p => p.id !== id))
+      }
+    )
+  }
+
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
+    phonebookservice.getAll()
+      .then(initialPersons => {
+      setPersons(initialPersons)
+    })
   }, [])
 
   return (
@@ -63,7 +82,7 @@ const App = () => {
         onNumberChange={handelNumberChange}
       />
       <h2>Numbers</h2>
-      <Phonebook persons={persons} filter={filter}/>
+      <Phonebook persons={persons} filter={filter} removeHandle={removePerson}/>
     </div>
   )
 }
