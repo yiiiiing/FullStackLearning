@@ -3,13 +3,15 @@ import Filter from './components/Filter'
 import Phonebook from './components/Phonebook'
 import PersonForm from './components/PersonForm'
 import phonebookservice from './services/phonebook'
-
+import Notification from './components/Notification'
+import './App.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [infoMessage, setInfoMessage] = useState(null)
 
   const addPerson = (event) =>{
     event.preventDefault()
@@ -30,15 +32,18 @@ const App = () => {
         .then((newPerson) => {
           console.log(`Update person's number with ${id}`)
           setPersons(persons.map(p => p.id === id ? newPerson : p))
-        })
+          setInfoMessage(`Updated number of ${newPerson.name}`)
+        }) 
       }     
     }else{
       phonebookservice
       .create({name: newName, number:newNumber})
       .then( createdPerson => {
-        setPersons(persons.concat(createdPerson))
+      setPersons(persons.concat(createdPerson))
+      setInfoMessage(`Added ${createdPerson.name}`)
       })
     }
+    setTimeout(() => { setInfoMessage(null)}, 5000)
     setNewName('')
     setNewNumber('')
   }
@@ -75,6 +80,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={infoMessage} />
       <Filter filterValue={filter} onFilterChange={handelFilterChange} />
       <h2>add a new</h2>
       <PersonForm 
