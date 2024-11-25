@@ -11,7 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
-  const [infoMessage, setInfoMessage] = useState(null)
+  const [Message, setMessage] = useState({content: null, type: null})
 
   const addPerson = (event) =>{
     event.preventDefault()
@@ -32,18 +32,22 @@ const App = () => {
         .then((newPerson) => {
           console.log(`Update person's number with ${id}`)
           setPersons(persons.map(p => p.id === id ? newPerson : p))
-          setInfoMessage(`Updated number of ${newPerson.name}`)
-        }) 
+          setMessage({content:`Updated number of ${newPerson.name}`, type:'info'})
+        })
+        .catch((error) => {
+          setMessage({content:`${updatePerson.name} was already removed from server`, type:'error'})
+          setPersons(persons.filter(p => p.id !== id))}
+        )
       }     
     }else{
       phonebookservice
       .create({name: newName, number:newNumber})
       .then( createdPerson => {
       setPersons(persons.concat(createdPerson))
-      setInfoMessage(`Added ${createdPerson.name}`)
+      setMessage({content:`Added ${createdPerson.name}`, type:'info'})
       })
     }
-    setTimeout(() => { setInfoMessage(null)}, 5000)
+    setTimeout(() => { setMessage({content:null, type:null})}, 5000)
     setNewName('')
     setNewNumber('')
   }
@@ -80,7 +84,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={infoMessage} />
+      <Notification message={Message} />
       <Filter filterValue={filter} onFilterChange={handelFilterChange} />
       <h2>add a new</h2>
       <PersonForm 
