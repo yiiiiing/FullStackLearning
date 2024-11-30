@@ -17,15 +17,24 @@ const App = () => {
       countryService
       .getAllByFilter(filter)
       .then((data) => {
-        setCountries(data)
+        const showedCountries = data.map((country) => {return {...country, show:false}})
+        setCountries(showedCountries)
       })
     }
   }, [filter])
 
+  const onClickCountryShow = (item) => {
+    console.log(`Toggle show button for country: ${item.name.common}`)
+    const showedCountries = countries.map((country) =>{
+      return country.name.common === item.name.common? {...country, show:!country.show} : country
+    })
+    setCountries(showedCountries)
+  }
+
   return (
     <div>
       <CountryForm countryFilter={filter} onFilterChange={onFilterChange}/>
-      <CountryDisplay countries={countries}/>
+      <CountryDisplay countries={countries} onClickCountryShow={onClickCountryShow}/>
     </div>
   )
 }

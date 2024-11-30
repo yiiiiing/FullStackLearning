@@ -17,8 +17,7 @@ const Country = ({country}) => {
     )
 }
 
-
-const CountryDisplay = ({countries}) => {
+const CountryDisplay = ({countries, onClickCountryShow}) => {
     if (countries.length > 10){
         return <p>Too many matches, specify another filter</p>
     }
@@ -28,7 +27,14 @@ const CountryDisplay = ({countries}) => {
     }
 
     const countryComp = countries.map((item) => {
-        return <p key={nanoid()}>{item.name.common}</p>
+        return (
+            <div key={nanoid()}>
+                <p>{item.name.common}
+                    <button onClick={() => onClickCountryShow(item)}>show</button>
+                </p>
+                {item.show? <Country country={item}/> : null}
+            </div>
+        )
     })
 
     return (
