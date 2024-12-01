@@ -3,6 +3,7 @@ import countryService from './services/country'
 import CountryForm from './components/CountryForm'
 import CountryDisplay from './components/CountryDisplay'
 
+
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filter, setFilter] = useState("")
@@ -17,7 +18,7 @@ const App = () => {
       countryService
       .getAllByFilter(filter)
       .then((data) => {
-        const showedCountries = data.map((country) => {return {...country, show:false}})
+        const showedCountries = data.map((country) => {return {...country, show:false, weather:null}})
         setCountries(showedCountries)
       })
     }
